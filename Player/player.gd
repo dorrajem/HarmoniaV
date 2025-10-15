@@ -6,6 +6,10 @@ extends CharacterBody2D
 @export var move_speed : float = 100.0
 
 var input_vector : Vector2 = Vector2.ZERO
+var dash_timer : float = 0.0
+
+func _process(delta: float) -> void:
+	pass
 
 func _physics_process(delta: float) -> void:
 	
@@ -17,6 +21,16 @@ func _physics_process(delta: float) -> void:
 		if input_vector != Vector2.ZERO:
 			var direction_vector : Vector2 = Vector2(input_vector.x, -input_vector.y)
 			update_blend_positions(direction_vector)
+		
+		if Input.is_action_just_pressed("move_right"):
+			dash_timer += delta
+			if dash_timer >= 0.6:
+				dash_timer = 0.0
+			if (dash_timer < 0.6 and Input.is_action_just_pressed("move_right")):
+				var is_dashing : float = 0.5
+				if is_dashing > 0.0:
+					velocity = input_vector * move_speed * 20
+					is_dashing -= delta
 		
 		if Input.is_action_just_pressed("tonic_attack"):
 			playback.travel("AttackState")
