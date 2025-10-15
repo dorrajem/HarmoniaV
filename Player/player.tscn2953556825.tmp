@@ -1,0 +1,79 @@
+[gd_scene load_steps=16 format=3 uid="uid://bqqssa8nex3i3"]
+
+[ext_resource type="Texture2D" uid="uid://cc7804knaxg4x" path="res://Testing Texture Pack/heroes/knight/knight_idle_anim_f0.png" id="1_5htga"]
+[ext_resource type="Script" uid="uid://cxh74qwp0l08w" path="res://Player/player.gd" id="1_p5o4e"]
+[ext_resource type="Texture2D" uid="uid://cyael66o75kji" path="res://Testing Texture Pack/heroes/knight/knight_idle_anim_f1.png" id="2_p5o4e"]
+[ext_resource type="Texture2D" uid="uid://b5kc3htbigjb" path="res://Testing Texture Pack/heroes/knight/knight_idle_anim_f2.png" id="3_gu6f8"]
+[ext_resource type="Texture2D" uid="uid://cy1snfexpwse8" path="res://Testing Texture Pack/heroes/knight/knight_idle_anim_f3.png" id="4_dkpta"]
+[ext_resource type="Texture2D" uid="uid://bfjkxuwurxfql" path="res://Testing Texture Pack/heroes/knight/knight_idle_anim_f4.png" id="5_lfmf2"]
+[ext_resource type="Texture2D" uid="uid://dorvbvgdew6rf" path="res://Testing Texture Pack/heroes/knight/knight_idle_anim_f5.png" id="6_pisgm"]
+[ext_resource type="Texture2D" uid="uid://brr5iikd0eqbq" path="res://Testing Texture Pack/heroes/knight/knight_run_anim_f0.png" id="7_b1ygp"]
+[ext_resource type="Texture2D" uid="uid://bco2yylqhpw51" path="res://Testing Texture Pack/heroes/knight/knight_run_anim_f1.png" id="8_o28un"]
+[ext_resource type="Texture2D" uid="uid://cf704x5ndt2qu" path="res://Testing Texture Pack/heroes/knight/knight_run_anim_f2.png" id="9_n471f"]
+[ext_resource type="Texture2D" uid="uid://b70m607k8ct04" path="res://Testing Texture Pack/heroes/knight/knight_run_anim_f3.png" id="10_7emwf"]
+[ext_resource type="Texture2D" uid="uid://d1ho7jwfpfj84" path="res://Testing Texture Pack/heroes/knight/knight_run_anim_f4.png" id="11_hshwv"]
+[ext_resource type="Texture2D" uid="uid://sqxcful5thd6" path="res://Testing Texture Pack/heroes/knight/knight_run_anim_f5.png" id="12_gpjlu"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8mwp6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_5htga")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_p5o4e")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_gu6f8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_dkpta")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_lfmf2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_pisgm")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_b1ygp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_o28un")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_n471f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_7emwf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_hshwv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_gpjlu")
+}],
+"loop": true,
+"name": &"run",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qemgg"]
+radius = 4.0
+height = 12.0
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_p5o4e")
+
+[node name="PlayerSprite" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_8mwp6")
+animation = &"idle"
+frame_progress = 0.3745404
+
+[node name="PlayerCollision" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_qemgg")
