@@ -207,20 +207,27 @@ func note_to_frequency(note_name : String, octave : int) -> float:
 	var n : int = current_index - a4_index
 	return 440.0 * pow(2.0, n /12.0)
 
-func play_note_by_name(note_name : String, octave : int, duration : float = 0.25) -> void:
-	if note_synth == null or note_synth.stream == null:
-		push_warning("Note Synth is not ready!!!")
-		return
-		
-	var generator : AudioStreamGenerator = note_synth.stream
-	var playback : AudioStreamGeneratorPlayback = note_synth.get_stream_playback()
-	if playback == null:
-		push_warning("Playback is not ready!!!")
-	
-	var sample_rate : float = generator.mix_rate
-	var samples : int = int(duration * sample_rate)
+func play_note_by_name(note_name : String, octave : int, duration : float = 0.7) -> void:
 	var frequency : float = note_to_frequency(note_name, octave)
 	var amplitude : float = 0.35
+	
+	# create a temporary AudioStreamPlayer2D
+	var temp_player : AudioStreamPlayer2D = AudioStreamPlayer2D.new()
+	var generator : AudioStreamGenerator = AudioStreamGenerator.new()
+	generator.mix_rate = 44100.0
+	temp_player.stream = generator
+	
+	add_child(temp_player)
+	temp_player.play()
+	
+	# create playback
+	var playback : AudioStreamGeneratorPlayback = temp_player.get_stream_playback()
+	if playback == null:
+		push_warning("Playback is not ready for note %s !!!" % note_name)
+	
+	# generate waveform buffer
+	var sample_rate : float = generator.mix_rate
+	var samples : int = int(duration * sample_rate)
 	var buffer : PackedVector2Array = PackedVector2Array()
 	
 	for i in range(samples):
@@ -231,10 +238,14 @@ func play_note_by_name(note_name : String, octave : int, duration : float = 0.25
 		s += 0.2 * sin(2.0 * PI * 2.0 * frequency * t)
 		# envelope
 		var envelope : float = lerp(1.0, 0.0, t / duration)
-		var sample = s * amplitude * envelope
+		var sample = s * amplitude * 4 / octave * envelope
 		
 		buffer.append(Vector2(sample, sample))
 	playback.push_buffer(buffer)
+	
+	# clean the temporary player
+	await get_tree().create_timer(duration + 0.05).timeout
+	temp_player.queue_free()
 
 func update_blend_positions(direction_vector : Vector2) -> void:
 	animation_tree.set("parameters/StateMachine/MoveState/RunState/blend_position", direction_vector)
