@@ -1,7 +1,7 @@
 [gd_scene load_steps=53 format=3 uid="uid://bqqssa8nex3i3"]
 
-[ext_resource type="Script" uid="uid://cxh74qwp0l08w" path="res://Player/player.gd" id="1_p5o4e"]
-[ext_resource type="Texture2D" uid="uid://6dc8tochj8gh" path="res://Player/player.png" id="2_4ntmi"]
+[ext_resource type="Script" uid="uid://cxh74qwp0l08w" path="res://player/player.gd" id="1_p5o4e"]
+[ext_resource type="Texture2D" uid="uid://6dc8tochj8gh" path="res://player/player.png" id="2_4ntmi"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qemgg"]
 radius = 6.0
@@ -489,3 +489,6 @@ position_smoothing_enabled = true
 position_smoothing_speed = 10.0
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
+
+[node name="NoteSynth" type="AudioStreamPlayer2D" parent="."]
+max_polyphony = 3
