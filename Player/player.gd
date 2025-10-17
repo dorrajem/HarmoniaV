@@ -209,7 +209,9 @@ func note_to_frequency(note_name : String, octave : int) -> float:
 
 func play_note_by_name(note_name : String, octave : int, duration : float = 0.7) -> void:
 	var frequency : float = note_to_frequency(note_name, octave)
-	var amplitude : float = 0.35
+	#var amplitude : float = 0.35
+	var amplitude : float = randf_range(0.3, 0.5)
+	print("AMP : ", amplitude)
 	
 	# create a temporary AudioStreamPlayer2D
 	var temp_player : AudioStreamPlayer2D = AudioStreamPlayer2D.new()
@@ -239,8 +241,8 @@ func play_note_by_name(note_name : String, octave : int, duration : float = 0.7)
 		# envelope
 		var envelope : float = lerp(1.0, 0.0, t / duration)
 		var sample = s * amplitude * 4 / octave * envelope
-		
 		buffer.append(Vector2(sample, sample))
+		
 	playback.push_buffer(buffer)
 	
 	# clean the temporary player
