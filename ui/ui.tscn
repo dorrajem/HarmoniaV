@@ -1,0 +1,48 @@
+[gd_scene load_steps=3 format=3 uid="uid://do8s3v1jwrhbe"]
+
+[ext_resource type="Script" uid="uid://vtbvqi50qg52" path="res://ui/ui.gd" id="1_ks8t7"]
+[ext_resource type="LabelSettings" uid="uid://7xwerq0tl33t" path="res://fonts/UI Labels.tres" id="1_nb4k0"]
+
+[node name="UI" type="CanvasLayer"]
+script = ExtResource("1_ks8t7")
+
+[node name="NoteDisplay" type="Label" parent="."]
+texture_filter = 1
+offset_left = 5.0
+offset_top = 246.0
+offset_right = 40.0
+offset_bottom = 266.0
+size_flags_horizontal = 0
+size_flags_vertical = 8
+text = "C4"
+label_settings = ExtResource("1_nb4k0")
+vertical_alignment = 1
+
+[node name="ComboMeter" type="HBoxContainer" parent="."]
+offset_left = 5.0
+offset_top = 219.0
+offset_right = 99.0
+offset_bottom = 259.0
+
+[node name="ComboLabel" type="Label" parent="ComboMeter"]
+layout_mode = 2
+text = "Combo X 10"
+label_settings = ExtResource("1_nb4k0")
+
+[node name="ComboBar" type="ProgressBar" parent="ComboMeter"]
+custom_minimum_size = Vector2(50, 20)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 5.0
+show_percentage = false
+
+[node name="RythmBar" type="ProgressBar" parent="."]
+offset_left = 145.0
+offset_top = 5.0
+offset_right = 201.0
+offset_bottom = 22.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+value = 5.7
+rounded = true
+show_percentage = false

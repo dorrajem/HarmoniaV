@@ -1,7 +1,8 @@
-[gd_scene load_steps=53 format=3 uid="uid://bqqssa8nex3i3"]
+[gd_scene load_steps=54 format=3 uid="uid://bqqssa8nex3i3"]
 
 [ext_resource type="Script" uid="uid://cxh74qwp0l08w" path="res://player/player.gd" id="1_p5o4e"]
 [ext_resource type="Texture2D" uid="uid://6dc8tochj8gh" path="res://player/player.png" id="2_4ntmi"]
+[ext_resource type="PackedScene" uid="uid://do8s3v1jwrhbe" path="res://ui/ui.tscn" id="3_g1dw6"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qemgg"]
 radius = 6.0
@@ -490,5 +491,15 @@ position_smoothing_speed = 10.0
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
 
-[node name="NoteSynth" type="AudioStreamPlayer2D" parent="."]
-max_polyphony = 3
+[node name="BeatController" type="Node" parent="."]
+
+[node name="BeatTickTimer" type="Timer" parent="BeatController"]
+wait_time = 0.5
+
+[node name="BeatWindowTimer" type="Timer" parent="BeatController"]
+wait_time = 0.15
+one_shot = true
+
+[node name="UI" parent="." node_paths=PackedStringArray("player", "beat_tick_timer") instance=ExtResource("3_g1dw6")]
+player = NodePath("..")
+beat_tick_timer = NodePath("../BeatController/BeatTickTimer")

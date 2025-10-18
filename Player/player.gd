@@ -1,9 +1,11 @@
-extends CharacterBody2D
+class_name Player extends CharacterBody2D
 
 # --- On Ready's ---
+@onready var ui: CanvasLayer = $UI
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var playback: AnimationNodeStateMachinePlayback = animation_tree.get("parameters/StateMachine/playback") as AnimationNodeStateMachinePlayback
-@onready var note_synth : AudioStreamPlayer2D = $NoteSynth
+@onready var beat_tick_timer: Timer = $BeatController/BeatTickTimer
+@onready var beat_window_timer: Timer = $BeatController/BeatWindowTimer
 
 # --- Movement Constatnts ---
 const MOVE_SPEED : float = 100.0
@@ -39,26 +41,40 @@ var active_notes : Array = [] # store pressed notes
 # --- BPM Variables ---
 const BPM : float = 120.0
 const BEAT_INTERVAL : float = 60.0 / BPM
-var beat_timer : float = 0.0
-var beat_window : float = 0.15 # margin of error
+const BEAT_WINDOW : float = 0.15 # margin of error
 var on_beat : bool = false
 
+@export var debug_beats : bool = false
+
 func _ready() -> void:
-	if note_synth.stream == null:
-		var generator : AudioStreamGenerator = AudioStreamGenerator.new()
-		generator.mix_rate = 44100
-		note_synth.stream = generator
-	note_synth.play()
+	# create timers if they don't exist in scene
+	#if beat_tick_timer == null:
+		#beat_tick_timer = Timer.new()
+		#beat_tick_timer.wait_time = BEAT_INTERVAL
+		#beat_tick_timer.one_shot = false
+		#beat_tick_timer.autostart = false
+		#add_child(beat_tick_timer)
+	#if beat_window_timer == null:
+		#beat_window_timer = Timer.new()
+		#beat_window_timer.wait_time = BEAT_WINDOW
+		#beat_window_timer.one_shot = false
+		#beat_window_timer.autostart = false
+		#add_child(beat_window_timer)
+	# make sure the tick and window timers are updated and start the beat tick timer
+	beat_tick_timer.wait_time = BEAT_INTERVAL
+	beat_window_timer.wait_time = BEAT_WINDOW
+	beat_tick_timer.start()
+	# connect timer signals
+	beat_tick_timer.connect("timeout", _on_beat_tick)
+	beat_window_timer.connect("timeout", _on_beat_window_end)
 
 func _process(delta: float) -> void:
-	beat_timer += delta
-	if beat_timer >= BEAT_INTERVAL:
-		beat_timer = 0.0
-		on_beat = true
-		await get_tree().create_timer(beat_window).timeout
-		on_beat = false
+	pass
 
 func _input(event: InputEvent) -> void:
+	if event.as_text() in ["tonic_attack", "median_major_attack", "median_minor_attack", "dominant_attack"]:
+		beat_tick_timer.start()
+		print("XDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD")
 	handle_notes_and_octaves()
 
 func _physics_process(delta: float) -> void:
@@ -75,6 +91,8 @@ func _physics_process(delta: float) -> void:
 			handle_attack_inputs()
 		"DashState":
 			handle_dash(delta)
+
+# --- Movement Functions ---
 
 func handle_movement(delta : float) -> void:
 	# get movement inputs
@@ -118,33 +136,39 @@ func handle_dash(delta: float) -> void:
 		is_dashing = false
 		playback.travel("MoveState")
 
+# --- Attack Functions ---
+
 func handle_attack_inputs() -> void:
 	# tonic
 	if Input.is_action_just_pressed("tonic_attack"):
 		active_notes.append("tonic")
 		print("Active Notes : ", active_notes)
 		play_note_by_name(notes[current_note_index], current_octave)
-		print(notes[current_note_index], current_octave)
+		print("Play : ", notes[current_note_index], current_octave, "  On Beat : ", on_beat)
+		ui.add_combo()
 	# major third from tonic
 	if Input.is_action_just_pressed("median_major_attack"):
 		active_notes.append("major")
 		print("Active Notes : ", active_notes)
 		var info : Dictionary = get_interval_note(current_note_index, 4, current_octave)
 		play_note_by_name(info["name"], info["octave"])
-		print(info["name"], info["octave"])
+		print("Play : ", info["name"], info["octave"], "  On Beat : ", on_beat)
+		ui.add_combo()
 	# minor third from tonic
 	if Input.is_action_just_pressed("median_minor_attack"):
 		active_notes.append("minor")
 		print("Active Notes : ", active_notes)
 		var info : Dictionary = get_interval_note(current_note_index, 3, current_octave)
 		play_note_by_name(info["name"], info["octave"])
-		print(info["name"], info["octave"])
+		print("Play : ", info["name"], info["octave"], "  On Beat : ", on_beat)
+		ui.add_combo()
 	# dominant fifth from tonic
 	if Input.is_action_just_pressed("dominant_attack"):
 		active_notes.append("dominant")
 		var info : Dictionary = get_interval_note(current_note_index, 7, current_octave)
 		play_note_by_name(info["name"], info["octave"])
-		print(info["name"], info["octave"])
+		print("Play : ", info["name"], info["octave"], "  On Beat : ", on_beat)
+		ui.add_combo()
 	#if on_beat:
 		#print("Perfect Timing! Bonus Damage!")
 		# need to increase damage, combo meter, visual flash, ...
@@ -155,28 +179,33 @@ func handle_attack_inputs() -> void:
 	if "tonic" in active_notes and "dominant" in active_notes:
 		if "major" in active_notes:
 			trigger_combo("major_chord")
+			print("Major Combo Detected !  On Beat : ", on_beat)
 		if "minor" in active_notes:
 			trigger_combo("minor_chord")
+			print("Minor Combo Detected !  On Beat : ", on_beat)
 	
 	# reset after a delay
 	if active_notes.size() > 0:
 		await get_tree().create_timer(0.75).timeout
 		active_notes.clear()
+		ui.reset_combo()
+
+func trigger_combo(type : String) -> void:
+	match type:
+		"major_chord":
+			#playback.travel("MajorChord")
+			pass
+		"minor_chord":
+			#playback.travel("MinorChord")
+			pass
+
+# --- Music Functions ---
 
 func get_interval_note(tonic_index : int, semitone_offset : int, tonic_octave : int) -> Dictionary:
 	var total : int = tonic_index + semitone_offset
 	var wrapped_index : int = total % notes.size()
 	var octave_shift : int = int(floor(float(total) / 12.0))
 	return {"name": notes[wrapped_index], "octave": tonic_octave + octave_shift, "index": wrapped_index}
-
-func trigger_combo(type : String) -> void:
-	match type:
-		"major_chord":
-			#playback.travel("MajorChord")
-			print("Major Combo!")
-		"minor_chord":
-			#playback.travel("MinorChord")
-			print("Minor Combo!")
 
 func handle_notes_and_octaves() -> void:
 	if Input.is_action_just_pressed("next_note"):
@@ -185,18 +214,22 @@ func handle_notes_and_octaves() -> void:
 			current_note_index = (current_note_index + 1) % notes.size()
 		current_tonic_index = current_note_index
 		print("Note : ", notes[current_note_index], current_octave)
+		ui.update_note_display(notes[current_note_index], current_octave)
 	if Input.is_action_just_pressed("previous_note"):
 		current_note_index = (current_note_index - 1 + notes.size()) % notes.size()
 		if notes[current_note_index].length() == 2:
 			current_note_index = (current_note_index - 1 + notes.size()) % notes.size()
 		current_tonic_index = current_note_index
 		print("Note : ", notes[current_note_index], current_octave)
+		ui.update_note_display(notes[current_note_index], current_octave)
 	if Input.is_action_just_pressed("next_octave") and current_octave < max_octave:
 		current_octave += 1
 		print("Octave : ", current_octave)
+		ui.update_note_display(notes[current_note_index], current_octave)
 	if Input.is_action_just_pressed("previous_octave") and current_octave > min_octave:
 		current_octave -= 1
 		print("Octave : ", current_octave)
+		ui.update_note_display(notes[current_note_index], current_octave)
 
 func note_to_frequency(note_name : String, octave : int) -> float:
 	var note_index : int = notes.find(note_name)
@@ -246,8 +279,22 @@ func play_note_by_name(note_name : String, octave : int, duration : float = 0.7)
 	playback.push_buffer(buffer)
 	
 	# clean the temporary player
-	await get_tree().create_timer(duration + 0.05).timeout
+	await get_tree().create_timer(duration + 0.25).timeout
 	temp_player.queue_free()
+
+# --- BPM functions ---
+func _on_beat_tick() -> void:
+	on_beat = true
+	beat_window_timer.start()
+	if debug_beats:
+		print("[Beat] tick at ", Time.get_ticks_msec() / 1000.0)
+
+func _on_beat_window_end() -> void:
+	on_beat = false
+	if debug_beats:
+		print("[Beat] window end at ", Time.get_ticks_msec() / 1000.0)
+
+# --- Animation Functions ---
 
 func update_blend_positions(direction_vector : Vector2) -> void:
 	animation_tree.set("parameters/StateMachine/MoveState/RunState/blend_position", direction_vector)

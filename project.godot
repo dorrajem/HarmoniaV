@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="HarmoniaV"
-run/main_scene="uid://bqqssa8nex3i3"
+run/main_scene="uid://b3i4r6x3ynvoc"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
+
+[audio]
+
+buses/default_bus_layout=""
 
 [display]
 
