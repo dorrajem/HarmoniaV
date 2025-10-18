@@ -301,3 +301,18 @@ func update_blend_positions(direction_vector : Vector2) -> void:
 	animation_tree.set("parameters/StateMachine/MoveState/MoveState/blend_position", direction_vector)
 	animation_tree.set("parameters/StateMachine/AttackState/blend_position", direction_vector)
 	animation_tree.set("parameters/StateMachine/DashState/blend_position", direction_vector)
+	
+	
+	
+var lives: int = 3
+
+func take_damage(amount: int) -> void:
+	lives -= amount
+	print("💥 Player hit! Lives remaining: ", lives)
+	if lives <= 0:
+		print("💀 Player has died!")
+		handle_death()
+
+func handle_death() -> void:
+	# for now, just log; later you can reset scene or respawn
+	print("Restart or game over logic here.")
