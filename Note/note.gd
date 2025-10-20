@@ -1,9 +1,17 @@
 extends Node2D
+
+# Lane index (0 = tonic, 1 = median, 2 = dominant)
+@export var lane: int = 0
+
+# Beat time when this note should reach the target
 @export var target_beat: float = 0.0
-@export var beat_map: Array = [
-	[1.0, 0], # beat 1, tonic lane
-	[2.0, 1], # beat 2, median lane
-	[2.5, 2], # beat 2.5, dominant lane
-	[3.0, 0],
-	[4.0, 1],
-]
+
+@export var speed: float = 400.0
+
+func _process(delta: float) -> void:
+	# Move note downward along Y axis
+	position.y += speed * delta
+
+	# Remove if it goes off screen
+	if position.y > 1000:
+		queue_free()

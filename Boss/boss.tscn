@@ -3,8 +3,6 @@
 [ext_resource type="Script" uid="uid://rqxecngdvy3g" path="res://Boss/boss.gd" id="1_2mdct"]
 [ext_resource type="Texture2D" uid="uid://cdv0nv5usc1hf" path="res://Enemy/slime_run_spritesheeet.png" id="2_t20dt"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_t20dt"]
-
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4cnrr"]
 
 [sub_resource type="Animation" id="Animation_am0pq"]
@@ -106,13 +104,10 @@ nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_4ntmi")
 nodes/StateMachine/position = Vector2(60, 80)
 node_connections = [&"output", 0, &"StateMachine"]
 
-[node name="Boss" type="Node2D" groups=["Boss"]]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_t20dt"]
+
+[node name="Boss" type="CharacterBody2D" groups=["Boss"]]
 script = ExtResource("1_2mdct")
-
-[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
-shape = SubResource("CapsuleShape2D_t20dt")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_t20dt")
@@ -133,3 +128,6 @@ tree_root = SubResource("AnimationNodeBlendTree_mk3vo")
 advance_expression_base_node = NodePath("..")
 anim_player = NodePath("../AnimationPlayer")
 parameters/StateMachine/idle/blend_position = Vector2(-0.47094804, -0.8654709)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_t20dt")

@@ -53,14 +53,25 @@ func _process(delta: float) -> void:
 				reset_combo()
 
 
+#func spawn_note(lane_idx: int, beat_time: float) -> void:
+	#if not note_scene:
+		#push_error("No note scene assigned!")
+		#return
+	#var note = note_scene.instantiate()
+	#note.position = Vector2(0, -600) # start high above lane
+	#note.set("target_beat", beat_time)
+	#lanes[lane_idx].add_child(note)
 func spawn_note(lane_idx: int, beat_time: float) -> void:
 	if not note_scene:
 		push_error("No note scene assigned!")
 		return
 	var note = note_scene.instantiate()
-	note.position = Vector2(0, -600) # start high above lane
-	note.set("target_beat", beat_time)
+	note.lane = lane_idx           
+	note.target_beat = beat_time
+	# Start at the top of the lane
+	note.position = Vector2(0, 45)
 	lanes[lane_idx].add_child(note)
+
 
 
 func _input(event: InputEvent) -> void:
