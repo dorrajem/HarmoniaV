@@ -316,3 +316,7 @@ func take_damage(amount: int) -> void:
 func handle_death() -> void:
 	# for now, just log; later you can reset scene or respawn
 	print("Restart or game over logic here.")
+# Inside Player.gd
+func _on_attack_area_body_entered(body):
+	if body.is_class("Enemy"): # or body.is_in_group("Enemy")
+		body.take_damage(1) # adjust damage per note

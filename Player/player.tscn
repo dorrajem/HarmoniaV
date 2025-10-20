@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=3 uid="uid://bqqssa8nex3i3"]
+[gd_scene load_steps=55 format=3 uid="uid://bqqssa8nex3i3"]
 
 [ext_resource type="Script" uid="uid://cxh74qwp0l08w" path="res://Player/player.gd" id="1_p5o4e"]
 [ext_resource type="Texture2D" uid="uid://6dc8tochj8gh" path="res://Player/player.png" id="2_4ntmi"]
@@ -459,6 +459,8 @@ nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_4ntmi")
 nodes/StateMachine/position = Vector2(60, 80)
 node_connections = [&"output", 0, &"StateMachine"]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_btcbx"]
+
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 script = ExtResource("1_p5o4e")
 
@@ -502,3 +504,8 @@ one_shot = true
 [node name="UI" parent="." node_paths=PackedStringArray("player", "beat_tick_timer") instance=ExtResource("3_g1dw6")]
 player = NodePath("..")
 beat_tick_timer = NodePath("../BeatController/BeatTickTimer")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CapsuleShape2D_btcbx")

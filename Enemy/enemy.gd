@@ -18,6 +18,8 @@ func _ready() -> void:
 
 	# ✅ Generate patrol points dynamically
 	_generate_patrol_points()
+	health = max_health
+
 
 func _physics_process(delta: float) -> void:
 	if _is_chasing and _player:
@@ -78,3 +80,17 @@ func _check_player_detection() -> void:
 			_is_chasing = false
 	else:
 		_is_chasing = false
+@export var max_health: int = 10
+var health: int
+
+
+
+func take_damage(amount: int) -> void:
+	health -= amount
+	print("%s took %d damage, remaining health: %d" % [name, amount, health])
+	if health <= 0:
+		die()
+
+func die() -> void:
+	print("%s has died!" % name)
+	queue_free()

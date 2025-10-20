@@ -1,11 +1,11 @@
-[gd_scene load_steps=19 format=3 uid="uid://3rih3lcco63f"]
+[gd_scene load_steps=19 format=3 uid="uid://b6goasrkiplta"]
 
-[ext_resource type="Script" uid="uid://bg8abhgbbag8v" path="res://Enemy/enemy.gd" id="1_2pb1h"]
-[ext_resource type="Texture2D" uid="uid://cdv0nv5usc1hf" path="res://Enemy/slime_run_spritesheeet.png" id="2_px1sc"]
+[ext_resource type="Script" uid="uid://rqxecngdvy3g" path="res://Boss/boss.gd" id="1_2mdct"]
+[ext_resource type="Texture2D" uid="uid://cdv0nv5usc1hf" path="res://Enemy/slime_run_spritesheeet.png" id="2_t20dt"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_2pb1h"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_t20dt"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_px1sc"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4cnrr"]
 
 [sub_resource type="Animation" id="Animation_am0pq"]
 length = 0.001
@@ -62,21 +62,21 @@ _data = {
 &"move": SubResource("Animation_eqilm")
 }
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_px1sc"]
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_mrrbl"]
 animation = &"idle"
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_am0pq"]
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_0sshd"]
 animation = &"idle"
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_eqilm"]
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_7ba5a"]
 animation = &"idle"
 
 [sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_m6jha"]
-blend_point_0/node = SubResource("AnimationNodeAnimation_px1sc")
+blend_point_0/node = SubResource("AnimationNodeAnimation_mrrbl")
 blend_point_0/pos = Vector2(-1, 0)
-blend_point_1/node = SubResource("AnimationNodeAnimation_am0pq")
+blend_point_1/node = SubResource("AnimationNodeAnimation_0sshd")
 blend_point_1/pos = Vector2(0, 1)
-blend_point_2/node = SubResource("AnimationNodeAnimation_eqilm")
+blend_point_2/node = SubResource("AnimationNodeAnimation_7ba5a")
 blend_point_2/pos = Vector2(1, 0)
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ncf7h"]
@@ -100,27 +100,28 @@ states/move/position = Vector2(391, 189)
 transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_m6jha"), "idle", "move", SubResource("AnimationNodeStateMachineTransition_glvfu"), "move", "idle", SubResource("AnimationNodeStateMachineTransition_0rspp")]
 graph_offset = Vector2(-27, 20)
 
-[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_3cio7"]
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_mk3vo"]
 graph_offset = Vector2(-247.13638, 82.29091)
 nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_4ntmi")
 nodes/StateMachine/position = Vector2(60, 80)
 node_connections = [&"output", 0, &"StateMachine"]
 
-[node name="Enemy" type="CharacterBody2D" groups=["Enemy"]]
-position = Vector2(172, 133)
-script = ExtResource("1_2pb1h")
+[node name="Boss" type="Node2D" groups=["Boss"]]
+script = ExtResource("1_2mdct")
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+shape = SubResource("CapsuleShape2D_t20dt")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_px1sc")
+texture = ExtResource("2_t20dt")
 hframes = 6
-
-[node name="EnemyCollision" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_2pb1h")
 
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-shape = SubResource("CapsuleShape2D_px1sc")
+shape = SubResource("CapsuleShape2D_4cnrr")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
@@ -128,7 +129,7 @@ libraries = {
 }
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = SubResource("AnimationNodeBlendTree_3cio7")
+tree_root = SubResource("AnimationNodeBlendTree_mk3vo")
 advance_expression_base_node = NodePath("..")
 anim_player = NodePath("../AnimationPlayer")
 parameters/StateMachine/idle/blend_position = Vector2(-0.47094804, -0.8654709)
