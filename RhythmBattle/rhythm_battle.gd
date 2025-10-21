@@ -13,8 +13,8 @@ class_name RhythmBattle
 	$Lanes/Lane_Dominant
 ]
 
-@onready var score_label: Label = $CanvasLayer/ScoreLabel
-@onready var combo_label: Label = $CanvasLayer/ComboLabel
+@onready var score_label: Label = $MozikUI/ScoreLabel
+@onready var combo_label: Label = $MozikUI/ComboLabel
 @onready var music: AudioStreamPlayer = $Music
 
 var beat_interval: float
@@ -77,10 +77,12 @@ func spawn_note(lane_idx: int, beat_time: float) -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("tonic_attack"):
 		check_hit(0)
-	if event.is_action_pressed("median_attack"):
+	if event.is_action_pressed("median_major_attack"):
 		check_hit(1)
 	if event.is_action_pressed("dominant_attack"):
 		check_hit(2)
+	if event.is_action_pressed("median_minor_attack"):
+		check_hit(3)
 
 
 func check_hit(lane_idx: int) -> void:

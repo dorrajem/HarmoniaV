@@ -1,4 +1,4 @@
-extends "res://scripts/Enemy.gd"
+extends "res://Enemy/enemy.gd"
 
 @export var phase: int = 1
 @export var is_rhythm_battle_triggered: bool = false
@@ -11,7 +11,7 @@ func _ready() -> void:
 
 func take_damage(amount: int) -> void:
 	# Keep base enemy behavior
-	.super(amount)
+	super(amount)
 
 	# Add boss-specific logic
 	if health <= max_health * 0.5 and not is_rhythm_battle_triggered:
@@ -21,7 +21,7 @@ func trigger_rhythm_battle() -> void:
 	is_rhythm_battle_triggered = true
 	print("Boss entering rhythm battle phase!")
 	
-	var rhythm_scene = preload("res://scenes/RhythmBattle.tscn").instantiate()
+	var rhythm_scene = preload("res://Scenes/World Scenes/rhythm_section.tscn").instantiate()
 	get_tree().current_scene.add_child(rhythm_scene)
 
 	# Optionally disable boss while rhythm battle happens

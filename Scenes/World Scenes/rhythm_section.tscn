@@ -9,11 +9,6 @@
 
 [node name="RhythmSection" type="Node2D"]
 script = ExtResource("1_gt2o8")
-note_scene = null
-bpm = null
-spawn_ahead_beats = null
-scroll_speed = null
-beat_map = null
 
 [node name="Lanes" type="Node2D" parent="."]
 
