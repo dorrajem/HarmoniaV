@@ -6,43 +6,103 @@
 [node name="UI" type="CanvasLayer"]
 script = ExtResource("1_ks8t7")
 
-[node name="NoteDisplay" type="Label" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+alignment = 2
+
+[node name="Title" type="Label" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Combo History"
+label_settings = ExtResource("1_nb4k0")
+
+[node name="H1" type="Control" parent="VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[node name="NotePulse" type="ColorRect" parent="VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+metadata/_edit_use_anchors_ = true
+
+[node name="RythmBar" type="ProgressBar" parent="VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 25)
+layout_mode = 2
+exp_edit = true
+rounded = true
+show_percentage = false
+
+[node name="Separator" type="HBoxContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 190)
+layout_mode = 2
+
+[node name="ComboHistory" type="VBoxContainer" parent="VBoxContainer/Separator"]
+custom_minimum_size = Vector2(75, 100)
+layout_mode = 2
+
+[node name="ComboLabel1" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
+layout_mode = 2
+label_settings = ExtResource("1_nb4k0")
+
+[node name="ComboLabel2" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
+layout_mode = 2
+label_settings = ExtResource("1_nb4k0")
+
+[node name="ComboLabel3" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
+layout_mode = 2
+label_settings = ExtResource("1_nb4k0")
+
+[node name="ComboLabel4" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
+layout_mode = 2
+label_settings = ExtResource("1_nb4k0")
+
+[node name="ComboLabel5" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
+layout_mode = 2
+label_settings = ExtResource("1_nb4k0")
+
+[node name="ComboLabel6" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
+layout_mode = 2
+label_settings = ExtResource("1_nb4k0")
+
+[node name="ComboLabel7" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
+layout_mode = 2
+label_settings = ExtResource("1_nb4k0")
+
+[node name="ComboLabel8" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
+layout_mode = 2
+label_settings = ExtResource("1_nb4k0")
+
+[node name="NoteDisplay" type="Label" parent="VBoxContainer"]
 texture_filter = 1
-offset_left = 5.0
-offset_top = 246.0
-offset_right = 40.0
-offset_bottom = 266.0
+layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
 text = "C4"
 label_settings = ExtResource("1_nb4k0")
 vertical_alignment = 1
 
-[node name="ComboMeter" type="HBoxContainer" parent="."]
-offset_left = 5.0
-offset_top = 219.0
-offset_right = 99.0
-offset_bottom = 259.0
-
-[node name="ComboLabel" type="Label" parent="ComboMeter"]
+[node name="ComboMeter" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
-text = "Combo X 10"
-label_settings = ExtResource("1_nb4k0")
 
-[node name="ComboBar" type="ProgressBar" parent="ComboMeter"]
+[node name="ComboBar" type="ProgressBar" parent="VBoxContainer/ComboMeter"]
 custom_minimum_size = Vector2(50, 20)
 layout_mode = 2
 size_flags_vertical = 4
 max_value = 5.0
 show_percentage = false
 
-[node name="RythmBar" type="ProgressBar" parent="."]
-offset_left = 145.0
-offset_top = 5.0
-offset_right = 201.0
-offset_bottom = 22.0
-size_flags_horizontal = 4
-size_flags_vertical = 4
-value = 5.7
-rounded = true
-show_percentage = false
+[node name="ComboLabel" type="Label" parent="VBoxContainer/ComboMeter"]
+layout_mode = 2
+text = "Combo X 10"
+label_settings = ExtResource("1_nb4k0")

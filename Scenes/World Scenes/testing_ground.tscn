@@ -18,4 +18,3 @@ stretch_mode = 1
 
 [node name="Player" parent="." instance=ExtResource("2_n1ume")]
 position = Vector2(180, 137)
-debug_beats = false

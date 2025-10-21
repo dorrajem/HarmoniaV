@@ -38,28 +38,22 @@ var max_octave : int = 6
 var current_octave : int = 4
 var active_notes : Array = [] # store pressed notes
 
+# --- Combo Variables ---
+var combo_buffer : Array = [] # store last few notes pressed
+var combo_timout : float = 0.5 # seconds before combo_buffer resets
+var combo_timer : float = 0.0
+var last_detected_combo : String = "" # to prevent repeated buttons
+var combo_locked : bool = false # prevents redetection while the input is held (detect the combo only once)
+
 # --- BPM Variables ---
-const BPM : float = 120.0
+const BPM : float = 60.0
 const BEAT_INTERVAL : float = 60.0 / BPM
-const BEAT_WINDOW : float = 0.15 # margin of error
+const BEAT_WINDOW : float = 0.25 # margin of error
 var on_beat : bool = false
 
 @export var debug_beats : bool = false
 
 func _ready() -> void:
-	# create timers if they don't exist in scene
-	#if beat_tick_timer == null:
-		#beat_tick_timer = Timer.new()
-		#beat_tick_timer.wait_time = BEAT_INTERVAL
-		#beat_tick_timer.one_shot = false
-		#beat_tick_timer.autostart = false
-		#add_child(beat_tick_timer)
-	#if beat_window_timer == null:
-		#beat_window_timer = Timer.new()
-		#beat_window_timer.wait_time = BEAT_WINDOW
-		#beat_window_timer.one_shot = false
-		#beat_window_timer.autostart = false
-		#add_child(beat_window_timer)
 	# make sure the tick and window timers are updated and start the beat tick timer
 	beat_tick_timer.wait_time = BEAT_INTERVAL
 	beat_window_timer.wait_time = BEAT_WINDOW
@@ -67,15 +61,16 @@ func _ready() -> void:
 	# connect timer signals
 	beat_tick_timer.connect("timeout", _on_beat_tick)
 	beat_window_timer.connect("timeout", _on_beat_window_end)
+	
+	ui.beat_tick_timer = self.beat_tick_timer
 
 func _process(delta: float) -> void:
 	pass
 
 func _input(event: InputEvent) -> void:
-	if event.as_text() in ["tonic_attack", "median_major_attack", "median_minor_attack", "dominant_attack"]:
-		beat_tick_timer.start()
-		print("XDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD")
 	handle_notes_and_octaves()
+	if event is InputEventJoypadButton and not event.pressed:
+		combo_locked = false
 
 func _physics_process(delta: float) -> void:
 	var state = playback.get_current_node()
@@ -86,9 +81,9 @@ func _physics_process(delta: float) -> void:
 	match state:
 		"MoveState":
 			handle_movement(delta)
-			handle_attack_inputs()
+			handle_attack_inputs(delta)
 		"AttackState":
-			handle_attack_inputs()
+			handle_attack_inputs(delta)
 		"DashState":
 			handle_dash(delta)
 
@@ -138,57 +133,42 @@ func handle_dash(delta: float) -> void:
 
 # --- Attack Functions ---
 
-func handle_attack_inputs() -> void:
+func handle_attack_inputs(delta : float) -> void:
+	# combo
+	combo_timer -= delta
+	if combo_timer <= 0.0:
+		combo_buffer.clear()
+		last_detected_combo = ""
+		combo_locked = false
+		ui.reset_combo()
+	
 	# tonic
 	if Input.is_action_just_pressed("tonic_attack"):
-		active_notes.append("tonic")
-		print("Active Notes : ", active_notes)
 		play_note_by_name(notes[current_note_index], current_octave)
-		print("Play : ", notes[current_note_index], current_octave, "  On Beat : ", on_beat)
+		register_note_input("Tonic")
 		ui.add_combo()
+		ui.pulse_on_hit(on_beat)
 	# major third from tonic
 	if Input.is_action_just_pressed("median_major_attack"):
-		active_notes.append("major")
-		print("Active Notes : ", active_notes)
 		var info : Dictionary = get_interval_note(current_note_index, 4, current_octave)
 		play_note_by_name(info["name"], info["octave"])
-		print("Play : ", info["name"], info["octave"], "  On Beat : ", on_beat)
+		register_note_input("Major")
 		ui.add_combo()
+		ui.pulse_on_hit(on_beat)
 	# minor third from tonic
 	if Input.is_action_just_pressed("median_minor_attack"):
-		active_notes.append("minor")
-		print("Active Notes : ", active_notes)
 		var info : Dictionary = get_interval_note(current_note_index, 3, current_octave)
 		play_note_by_name(info["name"], info["octave"])
-		print("Play : ", info["name"], info["octave"], "  On Beat : ", on_beat)
+		register_note_input("Minor")
 		ui.add_combo()
+		ui.pulse_on_hit(on_beat)
 	# dominant fifth from tonic
 	if Input.is_action_just_pressed("dominant_attack"):
-		active_notes.append("dominant")
 		var info : Dictionary = get_interval_note(current_note_index, 7, current_octave)
 		play_note_by_name(info["name"], info["octave"])
-		print("Play : ", info["name"], info["octave"], "  On Beat : ", on_beat)
+		register_note_input("Dominant")
 		ui.add_combo()
-	#if on_beat:
-		#print("Perfect Timing! Bonus Damage!")
-		# need to increase damage, combo meter, visual flash, ...
-	#else:
-		#print("Off-Beat. Reduced Efficiency")
-	
-	# combo detection
-	if "tonic" in active_notes and "dominant" in active_notes:
-		if "major" in active_notes:
-			trigger_combo("major_chord")
-			print("Major Combo Detected !  On Beat : ", on_beat)
-		if "minor" in active_notes:
-			trigger_combo("minor_chord")
-			print("Minor Combo Detected !  On Beat : ", on_beat)
-	
-	# reset after a delay
-	if active_notes.size() > 0:
-		await get_tree().create_timer(0.75).timeout
-		active_notes.clear()
-		ui.reset_combo()
+		ui.pulse_on_hit(on_beat)
 
 func trigger_combo(type : String) -> void:
 	match type:
@@ -277,10 +257,44 @@ func play_note_by_name(note_name : String, octave : int, duration : float = 0.7)
 		buffer.append(Vector2(sample, sample))
 		
 	playback.push_buffer(buffer)
+	ui.display_combo_history("%s%s" % [note_name, octave])
+
 	
 	# clean the temporary player
 	await get_tree().create_timer(duration + 0.25).timeout
 	temp_player.queue_free()
+
+# --- Combo Functions ---
+func register_note_input(note_type : String) -> void:
+	combo_buffer.append(note_type)
+	combo_timer = combo_timout
+	
+	# keep only the last 3 inputs (our combo size)
+	#if combo_buffer.size() > 3:
+		#combo_buffer.pop_front()
+	check_for_combos()
+
+func check_for_combos() -> void:
+	var combo_str = ",".join(combo_buffer)
+	
+	# prevent repeated detections while the same combo presists
+	if combo_locked and combo_str == last_detected_combo:
+		return
+	
+	# --- Combo Detection Rules --
+	if combo_buffer == ["Tonic", "Major", "Dominant"]:
+		on_combo_detected("Major", on_beat)
+	elif combo_buffer == ["Tonic", "Minor", "Dominant"]:
+		on_combo_detected("Minor", on_beat)
+
+func on_combo_detected(combo_type : String, on_beat : bool) -> void:
+	print(combo_type, " Combo Detected! On Beat : ", on_beat)
+	
+	last_detected_combo = ",".join(combo_buffer)
+	combo_locked = true
+	
+	if on_beat:
+		ui.flash(ui.combo_label, combo_type)
 
 # --- BPM functions ---
 func _on_beat_tick() -> void:
