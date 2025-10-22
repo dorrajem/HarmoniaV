@@ -1,12 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://do8s3v1jwrhbe"]
+[gd_scene load_steps=4 format=3 uid="uid://do8s3v1jwrhbe"]
 
 [ext_resource type="Script" uid="uid://vtbvqi50qg52" path="res://ui/ui.gd" id="1_ks8t7"]
 [ext_resource type="LabelSettings" uid="uid://7xwerq0tl33t" path="res://fonts/UI Labels.tres" id="1_nb4k0"]
+[ext_resource type="FontFile" uid="uid://cyggx033tasj5" path="res://fonts/KENNEY_MINI_SQUARE.TTF" id="2_wl5ax"]
 
 [node name="UI" type="CanvasLayer"]
 script = ExtResource("1_ks8t7")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -16,74 +18,36 @@ size_flags_horizontal = 2
 size_flags_vertical = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 25)
 layout_mode = 2
-alignment = 2
 
-[node name="Title" type="Label" parent="VBoxContainer/HBoxContainer"]
+[node name="ExpBar" type="ProgressBar" parent="VBoxContainer/HBoxContainer"]
+self_modulate = Color(1, 0, 1, 1)
+custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-text = "Combo History"
-label_settings = ExtResource("1_nb4k0")
+theme_override_fonts/font = ExtResource("2_wl5ax")
 
 [node name="H1" type="Control" parent="VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
+unique_name_in_owner = true
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 
 [node name="NotePulse" type="ColorRect" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(25, 25)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 metadata/_edit_use_anchors_ = true
 
-[node name="RythmBar" type="ProgressBar" parent="VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(100, 25)
-layout_mode = 2
-exp_edit = true
-rounded = true
-show_percentage = false
-
 [node name="Separator" type="HBoxContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 190)
 layout_mode = 2
 
-[node name="ComboHistory" type="VBoxContainer" parent="VBoxContainer/Separator"]
-custom_minimum_size = Vector2(75, 100)
-layout_mode = 2
-
-[node name="ComboLabel1" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
-layout_mode = 2
-label_settings = ExtResource("1_nb4k0")
-
-[node name="ComboLabel2" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
-layout_mode = 2
-label_settings = ExtResource("1_nb4k0")
-
-[node name="ComboLabel3" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
-layout_mode = 2
-label_settings = ExtResource("1_nb4k0")
-
-[node name="ComboLabel4" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
-layout_mode = 2
-label_settings = ExtResource("1_nb4k0")
-
-[node name="ComboLabel5" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
-layout_mode = 2
-label_settings = ExtResource("1_nb4k0")
-
-[node name="ComboLabel6" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
-layout_mode = 2
-label_settings = ExtResource("1_nb4k0")
-
-[node name="ComboLabel7" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
-layout_mode = 2
-label_settings = ExtResource("1_nb4k0")
-
-[node name="ComboLabel8" type="Label" parent="VBoxContainer/Separator/ComboHistory"]
-layout_mode = 2
-label_settings = ExtResource("1_nb4k0")
-
 [node name="NoteDisplay" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
 texture_filter = 1
 layout_mode = 2
 size_flags_horizontal = 0
@@ -93,9 +57,11 @@ label_settings = ExtResource("1_nb4k0")
 vertical_alignment = 1
 
 [node name="ComboMeter" type="HBoxContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="ComboBar" type="ProgressBar" parent="VBoxContainer/ComboMeter"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(50, 20)
 layout_mode = 2
 size_flags_vertical = 4
@@ -103,6 +69,7 @@ max_value = 5.0
 show_percentage = false
 
 [node name="ComboLabel" type="Label" parent="VBoxContainer/ComboMeter"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Combo X 10"
 label_settings = ExtResource("1_nb4k0")

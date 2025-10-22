@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://c6rbr3w8rqtj0"]
+
+[ext_resource type="Script" uid="uid://d2plk1yvmd3nw" path="res://note/note.gd" id="1_pw5gq"]
+
+[node name="NoteScene" type="Node2D"]
+script = ExtResource("1_pw5gq")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]

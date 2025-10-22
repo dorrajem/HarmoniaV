@@ -1,7 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://b3i4r6x3ynvoc"]
 
-[ext_resource type="Texture2D" uid="uid://bq3xp1w57ww41" path="res://Testing Texture Pack/Grass.webp" id="1_d6h6u"]
 [ext_resource type="PackedScene" uid="uid://bqqssa8nex3i3" path="res://player/player.tscn" id="2_n1ume"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_dnskh"]
+load_path = "res://.godot/imported/Grass.webp-592de70cf2770bc3563bd705eac0d170.ctex"
 
 [node name="TestingGround" type="Node2D"]
 y_sort_enabled = true
@@ -12,7 +14,7 @@ repeat_size = Vector2(360, 270)
 [node name="Background" type="TextureRect" parent="Parallax2D"]
 offset_right = 360.0
 offset_bottom = 270.0
-texture = ExtResource("1_d6h6u")
+texture = SubResource("CompressedTexture2D_dnskh")
 expand_mode = 1
 stretch_mode = 1
 

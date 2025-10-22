@@ -6,9 +6,29 @@ class_name Player extends CharacterBody2D
 @onready var playback: AnimationNodeStateMachinePlayback = animation_tree.get("parameters/StateMachine/playback") as AnimationNodeStateMachinePlayback
 @onready var beat_tick_timer: Timer = $BeatController/BeatTickTimer
 @onready var beat_window_timer: Timer = $BeatController/BeatWindowTimer
+@onready var hp_bar: ProgressBar = $HPBar
+@onready var tonic_hitbox: Area2D = $TonicHitbox
+@onready var median_hitbox: Area2D = $MedianHitbox
+@onready var dominant_hitbox: Area2D = $DominantHitbox
+
+# --- Combat Variables ---
+@export var health : float = 100.0
+var is_invinsible : bool = false
+var has_life_steal : bool = false
+var life_steal : float = 0.25
+var experience : float = 0
+var level : int = 1
+var damage_cooldown : float = 0.5
+var last_hit_time : Dictionary = {}
+var base_damage : int = 3.5
+var tonic_damage : float = 1
+var median_damage : float = 1.5
+var dominant_damage : float = 2.0
+var major_damage : float = 3.0
+var major_amplified : bool = false
 
 # --- Movement Constatnts ---
-const MOVE_SPEED : float = 100.0
+const MOVE_SPEED : float = 150.0
 const DASH_SPEED : float = MOVE_SPEED * 2
 const DASH_DURATION : float = 0.2
 const DASH_COOLDOWN : float = 0.7
@@ -34,8 +54,9 @@ var notes : Array = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#",
 var current_note_index : int = 0
 var current_tonic_index : int = 0
 var min_octave : int = 2
-var max_octave : int = 6
-var current_octave : int = 4
+var max_octave : int = 2
+#var max_octave : int = 6
+var current_octave : int = 2
 var active_notes : Array = [] # store pressed notes
 
 # --- Combo Variables ---
@@ -54,6 +75,8 @@ var on_beat : bool = false
 @export var debug_beats : bool = false
 
 func _ready() -> void:
+	hp_bar.value = health
+	health = 100.0
 	# make sure the tick and window timers are updated and start the beat tick timer
 	beat_tick_timer.wait_time = BEAT_INTERVAL
 	beat_window_timer.wait_time = BEAT_WINDOW
@@ -73,8 +96,7 @@ func _input(event: InputEvent) -> void:
 		combo_locked = false
 
 func _physics_process(delta: float) -> void:
-	var state = playback.get_current_node()
-	
+	var state : String = playback.get_current_node()
 	if dash_cooldown_timer > 0.0:
 		dash_cooldown_timer -= delta
 	
@@ -82,7 +104,11 @@ func _physics_process(delta: float) -> void:
 		"MoveState":
 			handle_movement(delta)
 			handle_attack_inputs(delta)
-		"AttackState":
+		"TonicState":
+			handle_attack_inputs(delta)
+		"MedianState":
+			handle_attack_inputs(delta)
+		"DominantState":
 			handle_attack_inputs(delta)
 		"DashState":
 			handle_dash(delta)
@@ -98,6 +124,7 @@ func handle_movement(delta : float) -> void:
 		last_input_vector = input_vector
 		var direction_vector : Vector2 = Vector2(input_vector.x, -input_vector.y)
 		update_blend_positions(direction_vector)
+		update_hitbox_positions(direction_vector)
 	
 	# detect double tap
 	if dash_cooldown_timer <= 0.0:
@@ -111,8 +138,12 @@ func handle_movement(delta : float) -> void:
 				last_tap_time[tap_direction] = now
 	
 	if Input.is_action_just_pressed("tonic_attack"):
-		playback.travel("AttackState")
-	
+		playback.travel("TonicState")
+	if Input.is_action_just_pressed("median_major_attack") or Input.is_action_just_pressed("median_minor_attack"):
+		playback.travel("MedianState")
+	if Input.is_action_just_pressed("dominant_attack"):
+		playback.travel("DominantState")
+		
 	velocity = input_vector * MOVE_SPEED
 	move_and_slide()
 
@@ -124,11 +155,13 @@ func start_dash() -> void:
 
 func handle_dash(delta: float) -> void:
 	dash_timer += delta
+	is_invinsible = true
 	velocity = last_input_vector.normalized() * DASH_SPEED
 	move_and_slide()
 	
 	if dash_timer >= DASH_DURATION:
 		is_dashing = false
+		is_invinsible = false
 		playback.travel("MoveState")
 
 # --- Attack Functions ---
@@ -169,15 +202,8 @@ func handle_attack_inputs(delta : float) -> void:
 		register_note_input("Dominant")
 		ui.add_combo()
 		ui.pulse_on_hit(on_beat)
+	perform_attack()
 
-func trigger_combo(type : String) -> void:
-	match type:
-		"major_chord":
-			#playback.travel("MajorChord")
-			pass
-		"minor_chord":
-			#playback.travel("MinorChord")
-			pass
 
 # --- Music Functions ---
 
@@ -257,7 +283,6 @@ func play_note_by_name(note_name : String, octave : int, duration : float = 0.7)
 		buffer.append(Vector2(sample, sample))
 		
 	playback.push_buffer(buffer)
-	ui.display_combo_history("%s%s" % [note_name, octave])
 
 	
 	# clean the temporary player
@@ -289,7 +314,17 @@ func check_for_combos() -> void:
 
 func on_combo_detected(combo_type : String, on_beat : bool) -> void:
 	print(combo_type, " Combo Detected! On Beat : ", on_beat)
-	
+	match combo_type:
+		"Major":
+			major_amplified = true
+			await get_tree().create_timer(0.1).timeout
+			major_amplified = false
+		"Minor":
+			has_life_steal = true
+			print("Life Steal")
+			await get_tree().create_timer(5).timeout
+			has_life_steal = false
+			print("No More Life Steal")
 	last_detected_combo = ",".join(combo_buffer)
 	combo_locked = true
 	
@@ -308,10 +343,115 @@ func _on_beat_window_end() -> void:
 	if debug_beats:
 		print("[Beat] window end at ", Time.get_ticks_msec() / 1000.0)
 
+# --- Combat Functions ---
+
+func take_damage(amount : float) -> void:
+	if (health - amount) <= 0.0:
+		health = max(0.0, health - amount)
+		handle_death()
+		return
+	health -= amount
+	hp_bar.value = clamp(health, 0.0, 100.0)
+	print("Player hit, HP remaining : ", health)
+	
+	create_tween().tween_property(self, "modulate", Color(1, 0.5, 0.5), 0.25).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
+	await get_tree().create_timer(0.2).timeout
+	create_tween().tween_property(self, "modulate", Color(1, 1, 1), 0.25).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
+
+func handle_death() -> void:
+	print("Dieded")
+
 # --- Animation Functions ---
 
 func update_blend_positions(direction_vector : Vector2) -> void:
 	animation_tree.set("parameters/StateMachine/MoveState/RunState/blend_position", direction_vector)
 	animation_tree.set("parameters/StateMachine/MoveState/MoveState/blend_position", direction_vector)
-	animation_tree.set("parameters/StateMachine/AttackState/blend_position", direction_vector)
+	animation_tree.set("parameters/StateMachine/TonicState/blend_position", direction_vector)
+	animation_tree.set("parameters/StateMachine/MedianState/blend_position", direction_vector)
+	animation_tree.set("parameters/StateMachine/DominantState/blend_position", direction_vector)
 	animation_tree.set("parameters/StateMachine/DashState/blend_position", direction_vector)
+
+
+func _on_player_hurtbox_area_entered(area: Area2D) -> void:
+	if is_invinsible:
+		return
+	
+	if not("Hitbox" in area.name):
+		return
+	
+	var enemy := area.get_parent()
+	if not(enemy is Enemy):
+		return
+	
+	var now = Time.get_ticks_msec() / 1000.0
+	if enemy not in last_hit_time:
+		last_hit_time[enemy] = 0.0
+		
+	if now - last_hit_time[enemy] < damage_cooldown:
+		return
+	
+	last_hit_time[enemy] = now
+	take_damage(10)
+	apply_knockback(enemy.global_position)
+
+func apply_knockback(from_position : Vector2, strength : float = 1000.0) -> void:
+	var direction : Vector2 = (global_position - from_position).normalized()
+	velocity = direction * strength
+	move_and_slide()
+
+func update_hitbox_positions(direction_vector : Vector2) -> void:
+	if direction_vector.angle() in [PI/2, PI/4]:
+		tonic_hitbox.rotation = direction_vector.angle()
+		median_hitbox.rotation = direction_vector.angle()
+		dominant_hitbox.rotation = direction_vector.angle()
+	else:
+		tonic_hitbox.rotation = -direction_vector.angle()
+		median_hitbox.rotation = -direction_vector.angle()
+		dominant_hitbox.rotation = -direction_vector.angle()
+
+func activate_hitbox(hitbox : Area2D) -> void:
+	hitbox.monitoring = true
+	await get_tree().create_timer(0.2).timeout
+	hitbox.monitoring = false
+
+func perform_attack() -> void:
+	var state : String = playback.get_current_node()
+	match state:
+		"TonicState":
+			activate_hitbox(tonic_hitbox)
+		"MedianState":
+			activate_hitbox(median_hitbox)
+		"DominantState":
+			activate_hitbox(dominant_hitbox)
+
+func _on_tonic_hit(area: Area2D) -> void:
+	var damage : float = tonic_damage * base_damage * (1.25 if on_beat else 1) * max(float(current_octave) / float(current_note_index + 1), float(current_note_index + 1) / float(current_octave))
+	if area.get_parent().has_method("take_damage"):
+		area.get_parent().take_damage(damage)
+		if has_life_steal:
+			health = clamp(health + damage * life_steal, 0.0, 100.0)
+			hp_bar.value = clamp(health, 0.0, 100.0)
+
+func _on_median_hit(area: Area2D) -> void:
+	var damage : float = median_damage * base_damage * (1.25 if on_beat else 1) * max(float(current_octave) / float(current_note_index + 1), float(current_note_index + 1) / float(current_octave))
+	if area.get_parent().has_method("take_damage"):
+		area.get_parent().take_damage(damage)
+		if has_life_steal:
+			health = clamp(health + damage * life_steal, 0.0, 100.0)
+			hp_bar.value = clamp(health, 0.0, 100.0)
+
+func _on_dominant_hit(area: Area2D) -> void:
+	var damage : float = (major_damage if major_amplified else dominant_damage) * base_damage * (1.25 if on_beat else 1) * max(float(current_octave) / float(current_note_index + 1), float(current_note_index + 1) / float(current_octave))
+	if area.get_parent().has_method("take_damage"):
+		area.get_parent().take_damage(damage)
+		if has_life_steal:
+			health = clamp(health + damage * life_steal, 0.0, 100.0)
+			hp_bar.value = clamp(health, 0.0, 100.0)
+
+func gain_exp() -> void:
+	experience += 25.0 / level
+	if experience >= 100.0:
+		experience -= 100.0
+		level += 1
+		if max_octave < 6:
+			max_octave += 1
