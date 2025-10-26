@@ -9,6 +9,8 @@ class_name Enemy
 @export var chase_speed: float = 100.0
 @export var detection_radius: float = 100.0
 
+@onready var guitar: AnimatedSprite2D = $Guitar
+@onready var drum: AnimatedSprite2D = $Drum
 
 signal enemy_died
 
@@ -17,7 +19,7 @@ var _patrol_points: Array[Vector2] = []
 var _player: Node2D = null
 var _is_chasing := false
 
-var health : float = 100.0
+var health : float = 50.0
 
 
 func _ready() -> void:
@@ -25,6 +27,12 @@ func _ready() -> void:
 	enemy_died.connect(_player.gain_exp)
 	hp_bar.value = health
 	hp_bar.max_value = health
+	var x = randi_range(0, 1)
+	match x:
+		0:
+			guitar.visible = true
+		1:
+			drum.visible = true
 
 	_generate_patrol_points()
 
@@ -91,7 +99,7 @@ func _check_player_detection() -> void:
 	else:
 		_is_chasing = false
 
-func apply_knockback(from_position : Vector2, strength : float = 1000.0) -> void:
+func apply_knockback(from_position : Vector2, strength : float = 2000.0) -> void:
 	var direction : Vector2 = (global_position - from_position).normalized()
 	velocity = direction * strength
 	move_and_slide()

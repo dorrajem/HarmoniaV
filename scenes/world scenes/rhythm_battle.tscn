@@ -1,0 +1,184 @@
+[gd_scene load_steps=16 format=3 uid="uid://csjvt7i08xnb"]
+
+[ext_resource type="Script" uid="uid://bjhi0ouse8pwq" path="res://rythm_battle/rhythm_battle.gd" id="1_eb0xn"]
+[ext_resource type="PackedScene" uid="uid://c6rbr3w8rqtj0" path="res://note/note_scene.tscn" id="2_obe6v"]
+[ext_resource type="PackedScene" uid="uid://bqqssa8nex3i3" path="res://player/player.tscn" id="3_obe6v"]
+[ext_resource type="AudioStream" uid="uid://ghlwyvor500l" path="res://audio/high_bpm.wav" id="3_qprua"]
+[ext_resource type="Texture2D" uid="uid://ca1u4llwdk83y" path="res://visual_assets/sky-bg.png" id="3_vfibw"]
+[ext_resource type="LabelSettings" uid="uid://7xwerq0tl33t" path="res://fonts/UI Labels.tres" id="4_eb0xn"]
+[ext_resource type="Texture2D" uid="uid://bs38dy5uxpeiy" path="res://visual_assets/lane tonic.png" id="4_shpdp"]
+[ext_resource type="Texture2D" uid="uid://b4p2utigmdob0" path="res://visual_assets/lane median.png" id="5_3k332"]
+[ext_resource type="FontFile" uid="uid://cyggx033tasj5" path="res://fonts/KENNEY_MINI_SQUARE.TTF" id="5_pvjv8"]
+[ext_resource type="Texture2D" uid="uid://c18ot3jaeo0xt" path="res://visual_assets/lane dominant.png" id="6_onbme"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_na04x"]
+size = Vector2(40, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_obe6v"]
+size = Vector2(40, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_eb0xn"]
+size = Vector2(40, 40)
+
+[sub_resource type="LabelSettings" id="LabelSettings_pvjv8"]
+font = ExtResource("5_pvjv8")
+font_size = 32
+shadow_size = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_shpdp"]
+font = ExtResource("5_pvjv8")
+font_size = 32
+shadow_size = 0
+
+[node name="RythmBattle" type="Node2D" node_paths=PackedStringArray("player")]
+script = ExtResource("1_eb0xn")
+note_scene = ExtResource("2_obe6v")
+player = NodePath("Player")
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_qprua")
+volume_db = -15.0
+autoplay = true
+
+[node name="TextureRect" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -140.0
+offset_top = -51.0
+offset_right = 500.0
+offset_bottom = 309.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_vfibw")
+
+[node name="Player" parent="." instance=ExtResource("3_obe6v")]
+position = Vector2(-137, 142)
+
+[node name="Lanes" type="Node2D" parent="."]
+
+[node name="LaneTonic" type="Node2D" parent="Lanes"]
+position = Vector2(0, 50)
+
+[node name="TonicSprite" type="Sprite2D" parent="Lanes/LaneTonic"]
+modulate = Color(0.7490196, 0.7490196, 0.7490196, 1)
+position = Vector2(314, 20)
+texture = ExtResource("4_shpdp")
+
+[node name="TargetZone" type="Area2D" parent="Lanes/LaneTonic"]
+position = Vector2(100, 0)
+monitoring = false
+
+[node name="ColorRect" type="ColorRect" parent="Lanes/LaneTonic/TargetZone"]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Lanes/LaneTonic/TargetZone"]
+position = Vector2(20, 20)
+scale = Vector2(1.4399987, 1.4399987)
+shape = SubResource("RectangleShape2D_na04x")
+
+[node name="Notes" type="Node2D" parent="Lanes/LaneTonic"]
+
+[node name="LaneMedian" type="Node2D" parent="Lanes"]
+position = Vector2(0, 112.5)
+
+[node name="MedianSprite" type="Sprite2D" parent="Lanes/LaneMedian"]
+modulate = Color(0.7490196, 0.7490196, 0.7490196, 1)
+position = Vector2(314, 20)
+texture = ExtResource("5_3k332")
+
+[node name="TargetZone" type="Area2D" parent="Lanes/LaneMedian"]
+position = Vector2(100, 0)
+monitoring = false
+
+[node name="ColorRect" type="ColorRect" parent="Lanes/LaneMedian/TargetZone"]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Lanes/LaneMedian/TargetZone"]
+position = Vector2(20, 19.5)
+scale = Vector2(1.4399987, 1.4399987)
+shape = SubResource("RectangleShape2D_obe6v")
+
+[node name="Notes" type="Node2D" parent="Lanes/LaneMedian"]
+
+[node name="LaneDominant" type="Node2D" parent="Lanes"]
+position = Vector2(0, 175)
+
+[node name="DominantSprite" type="Sprite2D" parent="Lanes/LaneDominant"]
+modulate = Color(0.7490196, 0.7490196, 0.7490196, 1)
+position = Vector2(314, 20)
+texture = ExtResource("6_onbme")
+
+[node name="TargetZone" type="Area2D" parent="Lanes/LaneDominant"]
+position = Vector2(100, 0)
+monitoring = false
+
+[node name="ColorRect" type="ColorRect" parent="Lanes/LaneDominant/TargetZone"]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Lanes/LaneDominant/TargetZone"]
+position = Vector2(20, 20)
+scale = Vector2(1.4399987, 1.4399987)
+shape = SubResource("RectangleShape2D_eb0xn")
+
+[node name="Notes" type="Node2D" parent="Lanes/LaneDominant"]
+
+[node name="MozikUI" type="CanvasLayer" parent="."]
+
+[node name="ScoreLabel" type="Label" parent="MozikUI"]
+offset_left = 4.0
+offset_top = 5.0
+offset_right = 96.0
+offset_bottom = 28.0
+text = "Score : 0000"
+label_settings = ExtResource("4_eb0xn")
+metadata/_edit_use_anchors_ = true
+
+[node name="ComboLabel" type="Label" parent="MozikUI"]
+offset_left = 4.0
+offset_top = 25.0
+offset_right = 86.0
+offset_bottom = 48.0
+text = "Combo: x0"
+label_settings = ExtResource("4_eb0xn")
+metadata/_edit_use_anchors_ = true
+
+[node name="ComboFails" type="Label" parent="MozikUI"]
+offset_left = 4.0
+offset_top = 246.0
+offset_right = 86.0
+offset_bottom = 269.0
+text = "Combo Fails = 0"
+label_settings = ExtResource("4_eb0xn")
+metadata/_edit_use_anchors_ = true
+
+[node name="CenterContainer" type="CenterContainer" parent="MozikUI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FailLabel" type="Label" parent="MozikUI/CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+label_settings = SubResource("LabelSettings_pvjv8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LoseLabel" type="Label" parent="MozikUI/CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+label_settings = SubResource("LabelSettings_shpdp")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="area_entered" from="Lanes/LaneTonic/TargetZone" to="." method="_on_target_zone_tonic_entered"]
+[connection signal="area_entered" from="Lanes/LaneMedian/TargetZone" to="." method="_on_target_zone_median_entered"]
+[connection signal="area_entered" from="Lanes/LaneDominant/TargetZone" to="." method="_on_target_zone_dominant_entered"]

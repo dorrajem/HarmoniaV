@@ -1,8 +1,19 @@
-[gd_scene load_steps=4 format=3 uid="uid://do8s3v1jwrhbe"]
+[gd_scene load_steps=7 format=3 uid="uid://do8s3v1jwrhbe"]
 
 [ext_resource type="Script" uid="uid://vtbvqi50qg52" path="res://ui/ui.gd" id="1_ks8t7"]
 [ext_resource type="LabelSettings" uid="uid://7xwerq0tl33t" path="res://fonts/UI Labels.tres" id="1_nb4k0"]
 [ext_resource type="FontFile" uid="uid://cyggx033tasj5" path="res://fonts/KENNEY_MINI_SQUARE.TTF" id="2_wl5ax"]
+[ext_resource type="PackedScene" uid="uid://oiohncwkiqnm" path="res://ui/wheel.tscn" id="4_vkava"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_wl5ax"]
+font = ExtResource("2_wl5ax")
+font_color = Color(0.9490196, 0, 0.9490196, 1)
+shadow_size = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_vkava"]
+font = ExtResource("2_wl5ax")
+font_size = 32
+shadow_size = 0
 
 [node name="UI" type="CanvasLayer"]
 script = ExtResource("1_ks8t7")
@@ -17,30 +28,6 @@ grow_vertical = 2
 size_flags_horizontal = 2
 size_flags_vertical = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 25)
-layout_mode = 2
-
-[node name="ExpBar" type="ProgressBar" parent="VBoxContainer/HBoxContainer"]
-self_modulate = Color(1, 0, 1, 1)
-custom_minimum_size = Vector2(200, 0)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("2_wl5ax")
-
-[node name="H1" type="Control" parent="VBoxContainer/HBoxContainer"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(125, 0)
-layout_mode = 2
-
-[node name="NotePulse" type="ColorRect" parent="VBoxContainer/HBoxContainer"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(25, 25)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-metadata/_edit_use_anchors_ = true
-
 [node name="Separator" type="HBoxContainer" parent="VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 190)
@@ -52,7 +39,7 @@ texture_filter = 1
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
-text = "C4"
+text = "C2"
 label_settings = ExtResource("1_nb4k0")
 vertical_alignment = 1
 
@@ -62,6 +49,7 @@ layout_mode = 2
 
 [node name="ComboBar" type="ProgressBar" parent="VBoxContainer/ComboMeter"]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(50, 20)
 layout_mode = 2
 size_flags_vertical = 4
@@ -73,3 +61,60 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Combo X 10"
 label_settings = ExtResource("1_nb4k0")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+alignment = 1
+
+[node name="ExpBar" type="ProgressBar" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+self_modulate = Color(1, 0, 1, 1)
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_wl5ax")
+
+[node name="LevelLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Level 1"
+label_settings = SubResource("LabelSettings_wl5ax")
+
+[node name="H1" type="Control" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(62.5, 0)
+layout_mode = 2
+
+[node name="NotePulse" type="ColorRect" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+color = Color(1, 1, 1, 0.4509804)
+metadata/_edit_use_anchors_ = true
+
+[node name="ComboDisplayLabel" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 4.0
+offset_top = 29.0
+offset_right = 164.0
+offset_bottom = 49.0
+label_settings = ExtResource("1_nb4k0")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DieLabel" type="Label" parent="CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+label_settings = SubResource("LabelSettings_vkava")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Wheel" parent="." instance=ExtResource("4_vkava")]

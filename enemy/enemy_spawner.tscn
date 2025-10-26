@@ -14,6 +14,7 @@ spawn_radius = 370.0
 autostart = true
 
 [node name="BossSpawnTimer" type="Timer" parent="."]
+wait_time = 120.0
 autostart = true
 
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]

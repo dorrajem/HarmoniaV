@@ -10,6 +10,8 @@ class_name Player extends CharacterBody2D
 @onready var tonic_hitbox: Area2D = $TonicHitbox
 @onready var median_hitbox: Area2D = $MedianHitbox
 @onready var dominant_hitbox: Area2D = $DominantHitbox
+@onready var camera_2d: Camera2D = $Camera2D
+@onready var sprite_2d: Sprite2D = $Sprite2D
 
 # --- Combat Variables ---
 @export var health : float = 100.0
@@ -316,14 +318,17 @@ func on_combo_detected(combo_type : String, on_beat : bool) -> void:
 	print(combo_type, " Combo Detected! On Beat : ", on_beat)
 	match combo_type:
 		"Major":
+			ui.combo_display("Major", "Strong Attack!")
 			major_amplified = true
 			await get_tree().create_timer(0.1).timeout
 			major_amplified = false
 		"Minor":
+			ui.combo_display("Minor", "Life Steal! (5 sec)")
 			has_life_steal = true
-			print("Life Steal")
+			create_tween().tween_property(sprite_2d, "modulate", Color(0.5, 1, 0.5), 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 			await get_tree().create_timer(5).timeout
 			has_life_steal = false
+			create_tween().tween_property(sprite_2d, "modulate", Color(1, 1, 1), 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 			print("No More Life Steal")
 	last_detected_combo = ",".join(combo_buffer)
 	combo_locked = true
@@ -359,7 +364,15 @@ func take_damage(amount : float) -> void:
 	create_tween().tween_property(self, "modulate", Color(1, 1, 1), 0.25).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_OUT)
 
 func handle_death() -> void:
-	print("Dieded")
+	playback.travel("DieState")
+	create_tween().tween_property(sprite_2d, "modulate", Color(0, 0, 0), 0.25).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+	ui.die_display()
+	await get_tree().create_timer(1).timeout
+	get_tree().change_scene_to_file("res://menu/main_menu.tscn")
+	queue_free()
+	
+	
+	
 
 # --- Animation Functions ---
 
@@ -370,6 +383,7 @@ func update_blend_positions(direction_vector : Vector2) -> void:
 	animation_tree.set("parameters/StateMachine/MedianState/blend_position", direction_vector)
 	animation_tree.set("parameters/StateMachine/DominantState/blend_position", direction_vector)
 	animation_tree.set("parameters/StateMachine/DashState/blend_position", direction_vector)
+	animation_tree.set("parameters/StateMachine/DieState/blend_position", direction_vector)
 
 
 func _on_player_hurtbox_area_entered(area: Area2D) -> void:
@@ -453,5 +467,6 @@ func gain_exp() -> void:
 	if experience >= 100.0:
 		experience -= 100.0
 		level += 1
+		ui.level_display(level)
 		if max_octave < 6:
 			max_octave += 1

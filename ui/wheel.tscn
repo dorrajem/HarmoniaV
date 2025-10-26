@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://oiohncwkiqnm"]
+
+[ext_resource type="Script" uid="uid://dktygtvi1sc2q" path="res://ui/wheel.gd" id="1_6rmvm"]
+[ext_resource type="Texture2D" uid="uid://bk460ruplxh13" path="res://visual_assets/wheel note.png" id="1_fky53"]
+[ext_resource type="Texture2D" uid="uid://iow4h5an5v1c" path="res://visual_assets/wheel octave.png" id="2_oyw86"]
+[ext_resource type="Texture2D" uid="uid://dav022k5uy7ba" path="res://visual_assets/wheel cover.png" id="3_fccca"]
+
+[node name="Wheel" type="Node2D"]
+script = ExtResource("1_6rmvm")
+
+[node name="NoteAnchor" type="Node2D" parent="."]
+rotation = 0.7400196
+
+[node name="Notes" type="Sprite2D" parent="NoteAnchor"]
+position = Vector2(-2, -6)
+texture = ExtResource("1_fky53")
+
+[node name="OctavesAnchor" type="Node2D" parent="."]
+rotation = 4.7211156
+
+[node name="Octaves" type="Sprite2D" parent="OctavesAnchor"]
+position = Vector2(-2, -6)
+texture = ExtResource("2_oyw86")
+
+[node name="CoverAnchor" type="Node2D" parent="."]
+
+[node name="Cover" type="Sprite2D" parent="CoverAnchor"]
+position = Vector2(-3, -6)
+texture = ExtResource("3_fccca")

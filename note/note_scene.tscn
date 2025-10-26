@@ -1,8 +1,33 @@
-[gd_scene load_steps=2 format=3 uid="uid://c6rbr3w8rqtj0"]
+[gd_scene load_steps=4 format=3 uid="uid://c6rbr3w8rqtj0"]
 
 [ext_resource type="Script" uid="uid://d2plk1yvmd3nw" path="res://note/note.gd" id="1_pw5gq"]
+[ext_resource type="Texture2D" uid="uid://bv4t2yl06odmq" path="res://note/note_shapes.png" id="2_yp5h6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yp5h6"]
+size = Vector2(12, 64)
 
 [node name="NoteScene" type="Node2D"]
 script = ExtResource("1_pw5gq")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(8.235292, 2.0000002)
+scale = Vector2(1.4117644, 1.5294116)
+texture = ExtResource("2_yp5h6")
+hframes = 4
+region_enabled = true
+region_rect = Rect2(0, 0, 84, 17)
+
+[node name="ColorRect" type="ColorRect" parent="."]
+visible = false
+offset_right = 24.0
+offset_bottom = 64.0
+scale = Vector2(0.9864888, 0.16000015)
+color = Color(0.48235294, 0, 1, 1)
+
+[node name="NoteArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NoteArea"]
+position = Vector2(6.081067, 5)
+scale = Vector2(0.9864888, 0.16000015)
+shape = SubResource("RectangleShape2D_yp5h6")
+debug_color = Color(0.6431373, 0, 0, 0.41960785)

@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3 uid="uid://c185pioiyj5g"]
+
+[ext_resource type="Texture2D" uid="uid://dgp6dde6gbqur" path="res://Grass.webp" id="1_d6h6u"]
+[ext_resource type="PackedScene" uid="uid://bqqssa8nex3i3" path="res://player/player.tscn" id="2_n1ume"]
+[ext_resource type="PackedScene" uid="uid://3rih3lcco63f" path="res://enemy/enemy.tscn" id="3_eapo3"]
+[ext_resource type="PackedScene" uid="uid://c2moylfnox5c4" path="res://enemy/enemy_spawner.tscn" id="4_wyvuc"]
+
+[node name="TestingGround" type="Node2D"]
+y_sort_enabled = true
+
+[node name="Parallax2D" type="Parallax2D" parent="."]
+repeat_size = Vector2(360, 270)
+
+[node name="Background" type="TextureRect" parent="Parallax2D"]
+z_index = -1
+offset_right = 360.0
+offset_bottom = 270.0
+texture = ExtResource("1_d6h6u")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="Player" parent="." instance=ExtResource("2_n1ume")]
+position = Vector2(180, 137)
+
+[node name="Enemy" parent="." instance=ExtResource("3_eapo3")]
+position = Vector2(29, 38)
+patrol_point_count = 10
+
+[node name="EnemySpawner" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_wyvuc")]
+player = NodePath("../Player")

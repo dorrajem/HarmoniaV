@@ -1,0 +1,38 @@
+[gd_scene load_steps=7 format=3 uid="uid://c185pioiyj5g"]
+
+[ext_resource type="Script" uid="uid://bl71ykfnvnw5t" path="res://scenes/world scenes/hack_n_slash.gd" id="1_a1oev"]
+[ext_resource type="AudioStream" uid="uid://b70wss4kq0mho" path="res://audio/low_bpm.wav" id="1_hdtn7"]
+[ext_resource type="Texture2D" uid="uid://q4fja37isjxn" path="res://visual_assets/sky-bg-no-dithering-desaturated.png" id="1_vrk0f"]
+[ext_resource type="PackedScene" uid="uid://bqqssa8nex3i3" path="res://player/player.tscn" id="2_vrk0f"]
+[ext_resource type="PackedScene" uid="uid://3rih3lcco63f" path="res://enemy/enemy.tscn" id="3_hdtn7"]
+[ext_resource type="PackedScene" uid="uid://c2moylfnox5c4" path="res://enemy/enemy_spawner.tscn" id="4_a1oev"]
+
+[node name="TestingGround" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_a1oev")
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("1_hdtn7")
+volume_db = -15.0
+autoplay = true
+
+[node name="Parallax2D" type="Parallax2D" parent="."]
+repeat_size = Vector2(360, 270)
+
+[node name="Background" type="TextureRect" parent="Parallax2D"]
+z_index = -1
+offset_right = 360.0
+offset_bottom = 270.0
+texture = ExtResource("1_vrk0f")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="Player" parent="." instance=ExtResource("2_vrk0f")]
+position = Vector2(180, 137)
+
+[node name="Enemy" parent="." instance=ExtResource("3_hdtn7")]
+position = Vector2(29, 38)
+patrol_point_count = 10
+
+[node name="EnemySpawner" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_a1oev")]
+player = NodePath("../Player")

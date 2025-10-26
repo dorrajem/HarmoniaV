@@ -11,8 +11,11 @@ class_name UI extends CanvasLayer
 @onready var combo_meter: HBoxContainer = %ComboMeter
 @onready var combo_bar: ProgressBar = %ComboBar
 @onready var combo_label: Label = %ComboLabel
-@onready var exp_bar: ProgressBar = $VBoxContainer/HBoxContainer/ExpBar
-
+@onready var exp_bar: ProgressBar = %ExpBar
+@onready var level_label: Label = %LevelLabel
+@onready var combo_display_label: Label = %ComboDisplayLabel
+@onready var die_label: Label = %DieLabel
+@onready var wheel: Node2D = $Wheel
 
 
 @export var player : Player
@@ -23,6 +26,7 @@ var combo_decay_rate : float = 0.2
 
 func _ready() -> void:
 	reset_combo()
+	update_note_display("C", 2)
 	exp_bar.value = clamp(player.experience, 0.0, 100.0)
 	# connect to beat tick
 	if beat_tick_timer:
@@ -33,9 +37,14 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	exp_bar.value = lerp(clamp(player.experience, 0.0, 100.0), clamp(player.experience, 0.0, 100.0), 0.2)
 	combo_bar.value = max(combo_value - combo_decay_rate * delta * 60, 0)
+	level_label.text = "Level " + str(player.level)
+	
+	
 
 func update_note_display(note : String, octave : int) -> void:
 	note_display.text = "%s%d" % [note, octave]
+	wheel.rotate_notes(note)
+	wheel.rotate_octaves(octave)
 
 func add_combo() -> void:
 	combo_value += 1
@@ -71,3 +80,20 @@ func pulse_on_hit(on_beat : bool) -> void:
 
 func flash(node, str : String) -> void:
 	create_tween().tween_property(node, "modulate", Color(0.3, 1, 0.3), 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+func combo_display(combo : String, ability : String) -> void:
+	create_tween().tween_property(combo_display_label, "text", combo + "Combo\n" + "Effect : " + ability, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await get_tree().create_timer(2.5).timeout
+	create_tween().tween_property(combo_display_label, "text", "", 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+func level_display(level : int) -> void:
+	create_tween().tween_property(combo_display_label, "text", "Level Up!\nNew Octave Unlocked", 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await get_tree().create_timer(2.5).timeout
+	create_tween().tween_property(combo_display_label, "text", "", 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+func die_display() -> void:
+	create_tween().tween_property(die_label, "text", "Dieded", 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	create_tween().tween_property(die_label, "modulate", Color.RED, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await get_tree().create_timer(2.5).timeout
+	create_tween().tween_property(die_label, "text", "", 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	create_tween().tween_property(die_label, "modulate", Color.WHITE, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
